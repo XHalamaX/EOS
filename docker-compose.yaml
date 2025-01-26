@@ -11,6 +11,7 @@ services:
       dockerfile: "Dockerfile"
       args:
         PYTHON_VERSION: "${PYTHON_VERSION}"
+        APT_PACKAGES: "${APT_PACKAGES}"
     env_file:
       - .env
     environment:

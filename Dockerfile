@@ -21,9 +21,22 @@ RUN adduser --system --group --no-create-home eos \
     && mkdir -p "${EOS_CONFIG_DIR}" \
     && chown eos "${EOS_CONFIG_DIR}"
 
+ARG APT_PACKAGES
+ENV APT_PACKAGES="${APT_PACKAGES}"
+RUN --mount=type=cache,sharing=locked,target=/var/lib/apt/lists \
+    --mount=type=cache,sharing=locked,target=/var/cache/apt \
+    rm /etc/apt/apt.conf.d/docker-clean; \
+    if [ -n "${APT_PACKAGES}" ]; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends ${APT_PACKAGES}; \
+    fi
+
 COPY requirements.txt .
 
+ARG PIP_EXTRA_INDEX_URL
+ENV PIP_EXTRA_INDEX_URL="${PIP_EXTRA_INDEX_URL}"
 RUN --mount=type=cache,target=/root/.cache/pip \
+    --mount=type=tmpfs,target=/root/.cargo \
     pip install -r requirements.txt
 
 COPY pyproject.toml .
