@@ -149,4 +149,69 @@ Use [GET /v1/prediction/list?key=weather_temp_air](https://akkudoktor-eos.readth
 Currently no effect on optimization.
 
 # Output Payload
+The result of the optimization has the following format:
+```
+{
+  "ac_charge": [0.625, 0, 0.625, 0, 1,...0, 0.75, 0],
+  "dc_charge": [1, 1, 1, 1,..., 1, 1, 1, 1, 1, 1],
+  "discharge_allowed": [ 0, 0, 1, 0, ..., 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+  "eautocharge_hours_float": [0.625, 0, 0.625, 0, 1,...0, 0.75, 0],
+  "result":
+  { 
+    "Last_Wh_pro_Stunde": [ 1014.3167452298054, 994.5016754424094, 1015.668919999559, ... 709.8047127909249,  1018.4826684188788 ],
+    "EAuto_SoC_pro_Stunde": [ 98, 98, 98, 98, 98, ..., 98, 98, 98, 98, 98, 98, 98, 98, 98 ],
+    "Einnahmen_Euro_pro_Stunde": [ 0, 0, 0, 0.28840447132108926, ..., 0.18214419122244094, 0, 0 ],
+    "Gesamt_Verluste": 1514.9566941829153,
+    "Gesamtbilanz_Euro": 2.510665005057431,
+    "Gesamteinnahmen_Euro": 2.882466921639813,
+    "Gesamtkosten_Euro": 5.393131926697244,
+    "Home_appliance_wh_per_hour": [ null, null, null, null, null, ..., null, null, null ],
+    "Kosten_Euro_pro_Stunde": [ 0, 0.5310514366908033, ..., 0.0000953632355384613, 0.0014098107544239743, 0, 0, ],
+    "Netzbezug_Wh_pro_Stunde": [ 0, 0, 0, 0, 1440.57711224113, 0, 1232.047396734616,..., 0, 1018.4826684188788 ],
+    "Netzeinspeisung_Wh_pro_Stunde": [ 0, 0, 0, 0,  4120.063876015562, ..., 2602.059874606299, 0, 0, 0, 0, 0, 0, 0 ],
+    "Verluste_Pro_Stunde": [ 88.20145610693964, 86.47840656020935, 0, ..., 345.1483049065923, 9.323789733278293e-11, 0, 0 ],
+    "akku_soc_pro_stunde": [ 59, 49.81234832219379, 40.80418097217197,..., 66.92328744645944, 100, 100, 100, 100],
+    "Electricity_price": [ 0.00040586619999999997, ..., 0.00039730252, 0.00038850095999999997, 0.00037042208 ]
+  },
+  "eauto_obj":
+  { 
+    "charge_array": [ 1, 1, 1, 1, 1, 1, 1, 1, 1, ... 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+    "discharge_array": [ 1, 1, 1, 1, 1, 1, 1, 1, ... 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+    "discharging_efficiency": 0.88,
+    "hours": 48,
+    "capacity_wh": 64000,
+    "charging_efficiency": 0.88,
+    "max_charge_power_w": 11040,
+    "soc_wh": 62720,
+    "initial_soc_percentage": 98
+  },
+  "start_solution": [ 17, 14, 17, 9, 15, 9, 14, 13, 16, 17, 14, 20 ,...,10, 3, 12, 10, 7, 13, 10, 12, 12, 4, 1, 3, 1, 3, 4, 5
+  ],
+  "washingstart": null
+}
+```
 
+### Home storage grid charge
+`ac_charge`
+
+The value can between 0 (no charge) and 1 (charge with full load). This value, combined with the planned SOC (akku_soc_pro_stunde) and the current SOC can be used to control grid load in your inverter.
+
+Array which contains values from the hour of the optimization start to the end of the day after tomorrow (min 25, max 48 entries)
+
+### Home storage grid discharge
+`dc_charge`
+
+Array which contains values from the hour of the optimization start to the end of the day after tomorrow (min 25, max 48 entries)
+
+### Allow home storage discharge
+`discharge_allowed`
+This array contains values 0 (no discharge) or 1 (discharge)
+
+Array which contains values from the hour of the optimization start to the end of the day after tomorrow (min 25, max 48 entries)
+
+### EV car charging
+`eautocharge_hours_float`
+
+The value can between 0 (no charge) and 1 (charge with full load). This value, combined with the planned SOC (akku_soc_pro_stunde) and the current SOC can be used to control grid load in your inverter.
+
+Array which contains values from the hour of the optimization start to the end of the day after tomorrow (min 25, max 48 entries)
