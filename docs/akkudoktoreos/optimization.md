@@ -4,11 +4,11 @@
 
 ## Introduction
 
-The `/optimize` API is used to optimize energy management by considering various input parameters such as electricity prices, battery storage, PV forecast, and temperature data.
+The `/optimize` API optimizes energy management based on inputs such as electricity prices, battery storage, PV forecast, and temperature data.
 
 ## Input Payload Overview
 
-Below is a sample payload:
+### Sample payload:
 ```
 {
     "ems": {
@@ -49,11 +49,11 @@ Below is a sample payload:
 ## Energy Storage System (EMS)
 ### Battery Cost per Wh
 `preis_euro_pro_wh_akku: 0.0007`  
-Defines the cost associated with stored energy in the battery. This ensures that the system does not treat stored energy as "free" but instead accounts for its value when optimizing energy usage. Use the default value or adjust it slightly so the optimization fits your needs.
+The residual value of the energy in the battery. Adjust as needed for your optimization.
 
 ### Feed-in Tariff per Wh
 `einspeiseverguetung_euro_pro_wh`  
-Compensation received per Wh of excess energy fed into the grid.
+Compensation per Wh of excess energy fed into the grid.
 
 ### Projected Total Load
 `gesamtlast: [500, 500, ..., 500, 500]`
@@ -62,13 +62,13 @@ Compensation received per Wh of excess energy fed into the grid.
 - Amount of values: 48
 - Unit: W
 
-Expected average energy consumption per hour without loads from devices which should be optimized. So exclude your car, battery charge from grid or dishwasher if possible. Otherwise the system consider these values as fixed loads. If you charged your car yesterday from 07:00 to 10:00 it does not mean that you will do this tomorrow as well. The system will calulate when the car should be charged.
+Expected average energy consumption per hour excluding optimized device loads. So exclude your car, battery charge from grid or dishwasher if possible. Otherwise the system consider these values as fixed loads. If you charged your car yesterday from 07:00 to 10:00 it does not mean that you will do this tomorrow as well. The system will calulate when the car should be charged.
 
 #### Data sources
-##### EOS standard load profile prediction
+##### A) EOS standard load profile prediction
 Use [GET /v1/prediction/list?key=load_mean](https://akkudoktor-eos.readthedocs.io/en/latest/akkudoktoreos/prediction.html#load-prediction)
 
-##### EOS adjusted load profile
+##### B) EOS adjusted load profile
 Use [GET /v1/prediction/list?key=load_mean_adjusted](https://akkudoktor-eos.readthedocs.io/en/latest/akkudoktoreos/prediction.html#load-prediction)
 
 ### Photovoltaic (PV) Forecast
@@ -113,7 +113,7 @@ Consideration of loses while charging or discharging the home battery.
 `"max_soc_percentage": 100`  
 
 #### Data sources
-The current SOC of the home battery `initial_soc_percentage`  can only be provided by third party implementations. EOS does not provide an interface for this at the moment.
+The `initial_soc_percentage` can only be provided by third-party implementations. EOS does not provide an interface for this.
 
 ## Inverter 
 ### Max Inverter power
@@ -146,10 +146,10 @@ Use [GET /v1/prediction/list?key=weather_temp_air](https://akkudoktor-eos.readth
 ## Start Solution
 `start_solution: null`
 
-Currently no effect on optimization.
+Currently has no effect on optimization.
 
 # Output Payload
-The result of the optimization has the following format:
+The optimization result is formatted as follows:
 ```
 {
   "ac_charge": [0.625, 0, 0.625, 0, 1,...0, 0.75, 0],
@@ -194,7 +194,7 @@ The result of the optimization has the following format:
 ### Home storage grid charge
 `ac_charge`
 
-The value can between 0 (no charge) and 1 (charge with full load). This value, combined with the planned SOC (akku_soc_pro_stunde) and the current SOC can be used to control grid load in your inverter.
+Array of values between 0 (no charge) and 1 (charge with full load). This value, combined with the planned SOC (akku_soc_pro_stunde) and the current SOC can be used to control grid load in your inverter.
 
 Array which contains values from the hour of the optimization start to the end of the day after tomorrow (min 25, max 48 entries)
 
